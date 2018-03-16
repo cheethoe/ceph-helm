@@ -1,0 +1,21 @@
+network:
+  public: 10.66.21.0/24
+  cluster: 10.66.21.0/24
+#  public:   10.244.0.0/16
+#  cluster:   10.244.0.0/16
+enable_zap_and_potentially_lose_data: true
+osd_devices:
+  - name: dev-sda
+    device: /dev/sda
+    zap: "1"
+storageclass:
+  name: ceph-rbd
+  pool: rbd
+  user_id: k8s
+
+conf:
+  ceph:
+    config:
+      mon:
+        mon_clock_drift_allowed: "0.75"
+        mon_force_quorum_join: true

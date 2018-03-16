@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ex
 export LC_ALL=C
-
+sleep 100000
 source variables_entrypoint.sh
 source common_functions.sh
 
@@ -30,9 +30,9 @@ function get_mon_config {
   while [[ -z "${MONMAP_ADD// }" && "${timeout}" -gt 0 ]]; do
     # Get the ceph mon pods (name and IP) from the Kubernetes API. Formatted as a set of monmap params
     if [[ ${K8S_HOST_NETWORK} -eq 0 ]]; then
-        MONMAP_ADD=$(kubectl get pods --namespace=${NAMESPACE} ${KUBECTL_PARAM} -o template --template="{{`{{range .items}}`}}{{`{{if .status.podIP}}`}}--add {{`{{.metadata.name}}`}} {{`{{.status.podIP}}`}} {{`{{end}}`}} {{`{{end}}`}}")
+        MONMAP_ADD=$(kubectl get pods --namespace=${NAMESPACE} ${KUBECTL_PARAM} -o template --template="{{`{{range .items}}`}}{{`{{if .status.podIP}}`}}--add {{`{{.metadata.name}}`}} {{`{{.status.podIP}}`}} {{`{{end}}`}} {{`{{end}}`}}" | sed -e 's/\.dev\.mtsvc\.net//g')
     else
-        MONMAP_ADD=$(kubectl get pods --namespace=${NAMESPACE} ${KUBECTL_PARAM} -o template --template="{{`{{range .items}}`}}{{`{{if .status.podIP}}`}}--add {{`{{.spec.nodeName}}`}} {{`{{.status.podIP}}`}} {{`{{end}}`}} {{`{{end}}`}}")
+        MONMAP_ADD=$(kubectl get pods --namespace=${NAMESPACE} ${KUBECTL_PARAM} -o template --template="{{`{{range .items}}`}}{{`{{if .status.podIP}}`}}--add {{`{{.spec.nodeName}}`}} {{`{{.status.podIP}}`}} {{`{{end}}`}} {{`{{end}}`}}" | sed -e 's/\.dev\.mtsvc\.net//g')
     fi
     (( timeout-- ))
     sleep 1
@@ -44,11 +44,13 @@ function get_mon_config {
 
   # if monmap exists and the mon is already there, don't overwrite monmap
   if [ -f "${MONMAP}" ]; then
+      set +e
       monmaptool --print "${MONMAP}" |grep -q "${MON_IP// }"":6789"
       if [ $? -eq 0 ]; then
           log "${MON_IP} already exists in monmap ${MONMAP}"
           return
       fi
+      set -e
   fi
 
   # Create a monmap with the Pod Names and IP

@@ -26,6 +26,7 @@ mon_osd_min_down_reporters = {{ .Values.conf.ceph.config.mon.mon_osd_min_down_re
 mon_clock_drift_allowed = {{ .Values.conf.ceph.config.mon.mon_clock_drift_allowed | default "0.15" | quote }}
 mon_clock_drift_warn_backoff = {{ .Values.conf.ceph.config.mon.mon_clock_drift_warn_backoff | default "30" | quote }}
 mon_osd_report_timeout = {{ .Values.conf.ceph.config.mon.mon_osd_report_timeout | default "300" | quote }}
+mon_force_quorum_join = {{ .Values.conf.ceph.config.mon.mon_force_quorum_join | default "true" | quote }}
 
 [osd]
 # network

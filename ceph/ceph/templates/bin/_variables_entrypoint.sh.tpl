@@ -8,7 +8,6 @@ ALL_SCENARIOS="osd osd_directory osd_directory_single osd_ceph_disk osd_ceph_dis
 #########################
 # LIST OF ALL VARIABLES #
 #########################
-
 : ${CLUSTER:=ceph}
 : ${CLUSTER_PATH:=ceph-config/${CLUSTER}} # For KV config
 : ${CEPH_CLUSTER_NETWORK:=${CEPH_PUBLIC_NETWORK}}

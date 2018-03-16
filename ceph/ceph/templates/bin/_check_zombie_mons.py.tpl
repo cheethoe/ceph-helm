@@ -7,9 +7,9 @@ import json
 MON_REGEX = r"^\d: ([0-9\.]*):\d+/\d* mon.([^ ]*)$"
 # kubctl_command = 'kubectl get pods --namespace=${NAMESPACE} -l application=ceph,component=mon -o template --template="{ {{"}}"}}range .items{{"{{"}} \\"{{"{{"}}.metadata.name{{"}}"}}\\": \\"{{"{{"}}.status.podIP{{"}}"}}\\" ,   {{"{{"}}end{{"}}"}} }"'
 if int(os.getenv('K8S_HOST_NETWORK', 0)) > 0:
-    kubectl_command = 'kubectl get pods --namespace=${NAMESPACE} -l application=ceph,component=mon -o template --template="{ {{"{{"}}range  \$i, \$v  := .items{{"}}"}} {{"{{"}} if \$i{{"}}"}} , {{"{{"}} end {{"}}"}} \\"{{"{{"}}\$v.spec.nodeName{{"}}"}}\\": \\"{{"{{"}}\$v.status.podIP{{"}}"}}\\" {{"{{"}}end{{"}}"}} }"'
+    kubectl_command = 'kubectl get pods --namespace=${NAMESPACE} -l application=ceph,component=mon -o template --template="{ {{"{{"}}range  \$i, \$v  := .items{{"}}"}} {{"{{"}} if \$i{{"}}"}} , {{"{{"}} end {{"}}"}} \\"{{"{{"}}\$v.spec.nodeName{{"}}"}}\\": \\"{{"{{"}}\$v.status.podIP{{"}}"}}\\" {{"{{"}}end{{"}}"}} }" | sed -e "s/\.dev\.mtsvc\.net//g"'
 else:
-    kubectl_command = 'kubectl get pods --namespace=${NAMESPACE} -l application=ceph,component=mon -o template --template="{ {{"{{"}}range  \$i, \$v  := .items{{"}}"}} {{"{{"}} if \$i{{"}}"}} , {{"{{"}} end {{"}}"}} \\"{{"{{"}}\$v.metadata.name{{"}}"}}\\": \\"{{"{{"}}\$v.status.podIP{{"}}"}}\\" {{"{{"}}end{{"}}"}} }"'
+    kubectl_command = 'kubectl get pods --namespace=${NAMESPACE} -l application=ceph,component=mon -o template --template="{ {{"{{"}}range  \$i, \$v  := .items{{"}}"}} {{"{{"}} if \$i{{"}}"}} , {{"{{"}} end {{"}}"}} \\"{{"{{"}}\$v.metadata.name{{"}}"}}\\": \\"{{"{{"}}\$v.status.podIP{{"}}"}}\\" {{"{{"}}end{{"}}"}} }" | sed -e "s/\.dev\.mtsvc\.net//g"'
 
 monmap_command = "ceph --cluster=${CLUSTER} mon getmap > /tmp/monmap && monmaptool -f /tmp/monmap --print"
 
